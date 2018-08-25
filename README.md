@@ -12,5 +12,5 @@ Set up to run regularly using crontab. I have mine set to run every half hour.
 
 
 Requires:
-(Dropbox Uploader)[https://github.com/andreafabrizi/Dropbox-Uploader]
-(Transmission)[https://transmissionbt.com]
+- [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader)
+- [Transmission](https://transmissionbt.com)
