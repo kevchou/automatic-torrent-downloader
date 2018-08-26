@@ -1,37 +1,42 @@
 # Process will download a file from a Dropbox folder containing torrent links.
 # Download will start in Transmission, completed downloads will be removed.
+# Set to run regularly using crontab
 #
 # Requires:
 # - Dropbox Uploader: https://github.com/andreafabrizi/Dropbox-Uploader
 # - Transmission: https://transmissionbt.com
 
-TORRENT_FILE='tor.txt'
+
+# path to torrent file on dropbox
+TORRENT_FILE='pi/tor.txt'
 
 ######################################################
-# Download links and start
+# Search for links to download
 ######################################################
 
-# get file from Dropbox containing links
-dropbox_uploader.sh download pi/$TORRENT_FILE ./$TORRENT_FILE
+# get file from Dropbox and save it to a temp file
+TEMP_FILE=$(mktemp /tmp/torrents.XXXXXXXXX)
+dropbox_uploader.sh download $TORRENT_FILE $TEMP_FILE
 
-# Declare array to hold links
+# parse each line into an array
 declare -a links
-readarray links < $TORRENT_FILE
+readarray links < $TEMP_FILE
 
-if [ ${#links[@]} -gt 0 ]
+num_links=${#links[@]}
+
+if [ $num_links -gt 0 ]
 then
-
     # Add each link to transmission
     for link in ${links[@]}
     do
         transmission-remote -a $link
     done
 
-    # Empty out torrent links file
-    cp /dev/null $TORRENT_FILE
+    # Update dropfile file with empty file
+    cp /dev/null $TEMP_FILE
+    dropbox_uploader.sh upload $TEMP_FILE $TORRENT_FILE
+    rm $TEMP_FILE
 
-    # Upload dropbox file with empty file
-    dropbox_uploader.sh upload ./$TORRENT_FILE pi/$TORRENT_FILE
 else
     echo "No links in file"
 fi
