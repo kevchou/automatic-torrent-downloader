@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Process will download a file from a Dropbox folder containing torrent links.
 # Download will start in Transmission, completed downloads will be removed.
 # Set to run regularly using crontab
